@@ -1,6 +1,8 @@
 module github.com/jpillora/media-sort
 
-go 1.22
+go 1.25
+
+toolchain go1.25.8
 
 require (
 	github.com/agnivade/levenshtein v1.0.3

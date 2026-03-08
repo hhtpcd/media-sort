@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -258,11 +257,15 @@ func (fs *fsSort) add(path string, info os.FileInfo) error {
 		//note directory
 		fs.dirs[path] = true
 		//add all files in dir
-		infos, err := ioutil.ReadDir(path)
+		entries, err := os.ReadDir(path)
 		if err != nil {
 			return err
 		}
-		for _, info := range infos {
+		for _, entry := range entries {
+			info, err := entry.Info()
+			if err != nil {
+				return err
+			}
 			p := filepath.Join(path, info.Name())
 			//recurse
 			if err := fs.add(p, info); err != nil {
