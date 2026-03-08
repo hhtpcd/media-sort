@@ -14,7 +14,7 @@ var (
 	getYear         = regexp.MustCompile(`\b` + yearstr + `\b`)
 	getDate         = regexp.MustCompile(`\b` + yearstr + `-(\d\d)-(\d\d)\b`)
 	sample          = regexp.MustCompile(`\bsample\b`)
-	encodings       = regexp.MustCompile(`\b(720p|1080p|hdtv|x264|dts|bluray)\b.*`) //strip all junk
+	encodings       = regexp.MustCompile(`\b(2160p|4k|uhd|1080p|720p|480p|hdtv|x264|x265|hevc|h265|dts|bluray|webrip|webdl|remux)\b.*`) //strip all junk
 	spaces          = regexp.MustCompile(`\s+`)
 	episeason       = regexp.MustCompile(`^(.+?)\bs?(eason)?(\d{1,2})(e|\ |\ e|x|xe)(pisode)?(\d{1,2})\b`)
 	epidate         = regexp.MustCompile(`^(.+?\b)(` + yearstr + ` \d{2} \d{2}|\d{2} \d{2} ` + yearstr + `)\b`)

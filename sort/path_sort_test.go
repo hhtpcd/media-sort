@@ -93,6 +93,18 @@ func TestPathParse(t *testing.T) {
 				Year:  "2012",
 			},
 		},
+		{
+			// release-group prefix + concatenated title + 2160p quality tag
+			"The.Bourne.Supremacy.2004.2160p.UHD.BluRay.x265-EMERALD/emd-thebournesupremacy.2160p.mkv",
+			1, //include parent dir to capture real title
+			Result{
+				Query: "the bourne supremacy",
+				Name:  "The.Bourne.Supremacy.2004.2160p.UHD.BluRay.x265-EMERALD emd-thebournesupremacy.2160p",
+				Ext:   "mkv",
+				MType: string(mediasearch.Movie),
+				Year:  "2004",
+			},
+		},
 	} {
 		//support windows
 		path := strings.ReplaceAll(tc.Input, "/", sep)

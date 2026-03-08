@@ -14,8 +14,8 @@ const debugMode = false
 type search func(string, string, MediaType) ([]Result, error)
 
 //various searches based on media-type
-var tvSearches = []search{searchTVMaze, searchMovieDB, searchGoogle}
-var movieSearches = []search{searchMovieDB, searchGoogle}
+var tvSearches = []search{searchTVMaze, searchMovieDB, searchDuckDuckGo}
+var movieSearches = []search{searchMovieDB, searchDuckDuckGo}
 
 //thread-safe global search cache
 //lock protects the cache/inflight maps

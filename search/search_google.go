@@ -2,8 +2,8 @@ package mediasearch
 
 import (
 	"fmt"
+	"io"
 	"log"
-
 	"net/http"
 	"net/url"
 	"regexp"
@@ -11,48 +11,44 @@ import (
 
 var imdbIDRe = regexp.MustCompile(`\/(tt\d+)\/`)
 
-//uses im feeling lucky and grabs the "Location"
-//header from the 302, which contains the IMDB ID
-func searchGoogle(query, year string, mediatype MediaType) ([]Result, error) {
+// searchDuckDuckGo searches DuckDuckGo's HTML interface for an IMDB page
+// matching the query, then resolves the IMDB ID via MovieDB.
+// This replaces the previous Google "I'm Feeling Lucky" approach, which
+// started redirecting EU/UK users to a GDPR consent page.
+func searchDuckDuckGo(query, year string, mediatype MediaType) ([]Result, error) {
+	q := query
 	if year != "" {
-		query += " " + year
+		q += " " + year
 	}
 	if string(mediatype) != "" {
-		query += " " + string(mediatype)
+		q += " " + string(mediatype)
 	}
-	query += " site:imdb.com"
+	q += " site:imdb.com"
 	if debugMode {
-		log.Printf("Searching Google for '%s'", query)
+		log.Printf("Searching DuckDuckGo for '%s'", q)
 	}
 	v := url.Values{}
-	v.Set("q", query)
-	v.Set("btnI", "I'm feeling lucky")
-	urlstr := "https://www.google.com/search?" + v.Encode()
-	req, err := http.NewRequest("GET", urlstr, nil)
+	v.Set("q", q)
+	req, err := http.NewRequest("GET", "https://html.duckduckgo.com/html/?"+v.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Accept", "*/*")
-	//I'm a browser... :)
+	req.Header.Set("Accept", "text/html")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36")
-	//roundtripper doesn't follow redirects
-	resp, err := http.DefaultTransport.RoundTrip(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	resp.Body.Close()
-	//assume redirection
-	if resp.StatusCode/100 != 3 {
-		return nil, fmt.Errorf("Google search expected redirect, got %d", resp.StatusCode)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
 	}
-	//extract Location header URL
-	loc := resp.Header.Get("Location")
-	//extract imdb ID
-	m := imdbIDRe.FindStringSubmatch(loc)
+	// extract first IMDB title ID from response HTML
+	m := imdbIDRe.FindSubmatch(body)
 	if len(m) == 0 {
-		return nil, fmt.Errorf("No IMDB match (%s)", loc)
+		return nil, fmt.Errorf("No IMDB match in DuckDuckGo results")
 	}
-	//lookup imdb ID using OMDB
 	r, err := imdbGet(imdbID(m[1]), mediatype)
 	if err != nil {
 		return nil, err

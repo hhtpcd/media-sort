@@ -9,7 +9,7 @@ import (
 var (
 	yearstr         = `(19\d\d|20\d\d)`
 	sample          = regexp.MustCompile(`\bsample\b`)
-	encodings       = regexp.MustCompile(`\b(720p|1080p|hdtv|x264|dts|bluray)\b.*`) //strip all junk
+	encodings       = regexp.MustCompile(`\b(2160p|4k|uhd|1080p|720p|480p|hdtv|x264|x265|hevc|h265|dts|bluray|webrip|webdl|remux)\b.*`) //strip all junk
 	nonalpha        = regexp.MustCompile(`[^A-Za-z0-9]`)
 	spaces          = regexp.MustCompile(`\s+`)
 	doubleepiseason = regexp.MustCompile(`^(.+?)\bs?(\d{1,2})(e||x|xe)(\d{2}).?(e||x|xe)(\d{2})\b`)
