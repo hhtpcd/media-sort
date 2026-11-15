@@ -14,7 +14,7 @@ import (
 	"github.com/fatih/color"
 	mediasearch "github.com/jpillora/media-sort/search"
 	"github.com/jpillora/sizestr"
-	"gopkg.in/fsnotify.v1"
+	"github.com/fsnotify/fsnotify"
 )
 
 //Config is a sorter configuration
